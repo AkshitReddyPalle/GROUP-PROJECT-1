@@ -108,8 +108,11 @@ ggplot(data2, aes(x=Income_label,
        y= "Frequency", 
        title="Boxplot of Drug Overdose Deaths by Median household Income Quartile")
 ```
+
+The total number of maternal deaths between different income group are different but the pattern in the number of drug overdose deaths is not that clear from the boxplots.
+
 # ANOVA Test
-Let's see if the Total number of maternal deaths per 100,000 population and Total number of drug overdose deaths involving any opioid per 100,000 population are different among different Income groups.
+Let's see if the Total number of maternal deaths per 100,000 population and Total number of drug overdose deaths per 100,000 population are different among different Income groups.
 
 ```{r}
 anova_maternal_deaths <- aov(Total_number_of_maternal_deaths ~ Income_label, data=data2)
@@ -120,6 +123,9 @@ xkabledply(anova_drug_overdose_deaths)
 ```
 
 
+From the above ANOVA tests, both the total number of maternal deaths and drug overdose deaths are not all the same among different income groups. Let's do Post-hoc Tukey HSD to see which groups are different from others.
+
+
 ## Post-hoc Tukey HSD 
 
 ```{r }
@@ -128,6 +134,10 @@ tukey_drug_overdose_deaths <- TukeyHSD(anova_drug_overdose_deaths)
 tukey_maternal_deaths
 tukey_drug_overdose_deaths
 ```
+
+From the Post-hoc Tukey HSD, the total number of maternal deaths of all the groups are different from others except the Upper Middle Income and Middle Income at 5% significance level. However, only the High Income and Middle Income are different in the total number of drug overdose deaths at the 5% significance level. 
+
+Let's have a look at the correlation coefficients between these variables.
 
 # Correlation Matrix
 
@@ -140,3 +150,4 @@ cor_matrix
 ```
 
 
+The correlation coefficient between income and maternal death is -0.5052, suggesting the negative relationship between the two variables.

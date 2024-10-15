@@ -1,0 +1,128 @@
+---
+title: "Project Question1"
+author: "Akshit Reddy"
+output: 
+  html_document:
+    code_folding: show
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+---
+
+# Load Libraries
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE , error = TRUE ,message = TRUE , results = "markup" , warning = TRUE)
+
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(broom)
+```
+
+```{r}
+# Load the data
+data <- read.csv("C:/Users/91970/Downloads/Combined_SDOH_2019_2020.csv")
+
+# Select relevant columns
+data <- data %>%
+  select(AHRF_UNEMPLOYED_RATE, CDCW_OPIOID_DTH_RATE) %>%
+  drop_na()
+
+```
+
+```{r}
+
+# Histogram for Unemployment Rate
+ggplot(data, aes(x = AHRF_UNEMPLOYED_RATE)) +
+  geom_histogram(binwidth = 0.5, fill = "blue", color = "black") +
+  labs(title = "Histogram of Unemployment Rate", x = "Unemployment Rate", y = "Frequency")
+
+# Histogram for Opioid Death Rate
+ggplot(data, aes(x = CDCW_OPIOID_DTH_RATE)) +
+  geom_histogram(binwidth = 2, fill = "red", color = "black") +
+  labs(title = "Histogram of Opioid Death Rate", x = "Opioid Death Rate", y = "Frequency")
+
+```
+
+```{r}
+# Q-Q Plot for Unemployment Rate
+qqnorm(data$AHRF_UNEMPLOYED_RATE, main="Q-Q plot of Unemployment Rate")
+qqline(data$AHRF_UNEMPLOYED_RATE)
+
+# Q-Q Plot for Opioid Death Rate
+qqnorm(data$CDCW_OPIOID_DTH_RATE, main="Q-Q plot of Opioid Death Rate")
+qqline(data$CDCW_OPIOID_DTH_RATE)
+
+```
+
+
+```{r}
+# Scatterplot between Unemployment Rate and Opioid Death Rate
+ggplot(data, aes(x = AHRF_UNEMPLOYED_RATE, y = CDCW_OPIOID_DTH_RATE)) +
+  geom_point(color = "black") +
+  labs(title = "Scatterplot of Unemployment Rate vs Opioid Death Rate", 
+       x = "Unemployment Rate", y = "Opioid Death Rate") +
+  geom_smooth(method = "lm", col = "red")
+
+```
+
+```{r}
+# Boxplot for Unemployment Rate
+ggplot(data, aes(y = AHRF_UNEMPLOYED_RATE)) +
+  geom_boxplot(fill = "blue") +
+  labs(title = "Boxplot of Unemployment Rate", y = "Unemployment Rate")
+
+# Boxplot for Opioid Death Rate
+ggplot(data, aes(y = CDCW_OPIOID_DTH_RATE)) +
+  geom_boxplot(fill = "red") +
+  labs(title = "Boxplot of Opioid Death Rate", y = "Opioid Death Rate")
+
+```
+
+```{r}
+# Summary Statistics
+summary(data)
+```
+
+```{r}
+# Correlation test
+cor_test <- cor.test(data$AHRF_UNEMPLOYED_RATE, data$CDCW_OPIOID_DTH_RATE)
+cor_test
+
+```
+
+
+```{r}
+# ANOVA 
+data$unemployment_group <- ntile(data$AHRF_UNEMPLOYED_RATE, 4)
+
+anova_result <- aov(CDCW_OPIOID_DTH_RATE ~ unemployment_group, data = data)
+summary(anova_result)
+
+```
+
+
+```{r}
+# Simple linear regression
+lm_model <- lm(CDCW_OPIOID_DTH_RATE ~ AHRF_UNEMPLOYED_RATE, data = data)
+summary(lm_model)
+
+# Plot the regression line
+ggplot(data, aes(x = AHRF_UNEMPLOYED_RATE, y = CDCW_OPIOID_DTH_RATE)) +
+  geom_point(color = "purple") +
+  geom_smooth(method = "lm", color = "blue") +
+  labs(title = "Regression Line for Unemployment Rate vs Opioid Death Rate", 
+       x = "Unemployment Rate", y = "Opioid Death Rate")
+
+```
+
+```{r}
+# Correlation matrix
+cor_matrix <- cor(data[, c("AHRF_UNEMPLOYED_RATE", "CDCW_OPIOID_DTH_RATE")])
+
+# Display correlation matrix
+corrplot(cor_matrix, method="circle")
+cor_matrix
+```
+

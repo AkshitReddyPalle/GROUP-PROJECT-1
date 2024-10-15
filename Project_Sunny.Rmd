@@ -48,22 +48,22 @@ First, the histograms.
 
 ```{r }
 ggplot( data=data2, aes(Median_household_income))+
-  geom_histogram(binwith=5000, col="black", fill="lightblue")+
+  geom_histogram(binwidth=5000, col="black", fill="red",boundary=35000)+
   labs(x="Median household income", 
        y= "Frequency", 
        title="Histogram of Median household income")
 ggplot(data=data2,aes(Total_number_of_maternal_deaths))+
   geom_histogram(breaks=seq(0,2.6,by=.1),
                  col="black",
-                 fill="lightgreen")+
+                 fill="green")+
   labs(x="Total number of maternal deaths( per 100,000 population)",
        y="Frequency",
        title="Histogram of Total number of maternal deaths")
 ggplot(data=data2,aes(Total_number_of_drug_overdose_deaths))+
   geom_histogram(breaks=seq(0,110,by=5),
                  col="black",
-                 fill="grey")+
-  labs(x="Total number of maternal deaths( per 100,000 population)",
+                 fill="blue")+
+  labs(x="Total number of drug overdose deaths( per 100,000 population)",
        y="Frequency",
        title="Histogram of Total number of drug overdose deaths")
 ```
@@ -109,7 +109,7 @@ ggplot(data2, aes(x=Income_label,
        title="Boxplot of Drug Overdose Deaths by Median household Income Quartile")
 ```
 
-The total number of maternal deaths between different income group are different but the pattern in the number of drug overdose deaths is not that clear from the boxplots.
+The total number of maternal deaths varies significantly between different income groups; however, the pattern in the number of drug overdose deaths is less distinct when viewed through the boxplots.
 
 # ANOVA Test
 Let's see if the Total number of maternal deaths per 100,000 population and Total number of drug overdose deaths per 100,000 population are different among different Income groups.

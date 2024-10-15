@@ -1,0 +1,145 @@
+---
+title: "Project-6101"
+author: "Palle"
+date: "2024-10-09"
+output: 
+  html_document:
+    code_folding: show
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = F, message = F, results = "markup")
+options(scipen=999, digits = 5) 
+```
+
+```{r}
+
+data <- read.csv("C:\\Users\\91970\\OneDrive\\Desktop\\DS GP1\\Combined_SDOH_2019_2020.csv")
+data_clean <- na.omit(data[, c('AHRF_UNEMPLOYED_RATE', 'CDCW_OPIOID_DTH_RATE')])
+summary(data_clean)
+```
+
+```{r}
+# Histograms
+library(ggplot2)
+ggplot(data_clean, aes(x=AHRF_UNEMPLOYED_RATE)) +
+  geom_histogram(binwidth=0.5, fill="skyblue", color="black") +
+  labs(title="Distribution of Unemployment Rate", x="Unemployment Rate", y="Frequency")
+
+ggplot(data_clean, aes(x=CDCW_OPIOID_DTH_RATE)) +
+  geom_histogram(binwidth=5, fill="salmon", color="black") +
+  labs(title="Distribution of Drug Overdose Death Rate", x="Drug Overdose Death Rate", y="Frequency")
+```
+
+```{r}
+# Boxplots for both variables
+ggplot(data_clean, aes(y=AHRF_UNEMPLOYED_RATE)) +
+  geom_boxplot(fill="lightblue") +
+  labs(title="Boxplot of Unemployment Rate", y="Unemployment Rate")
+
+ggplot(data_clean, aes(y=CDCW_OPIOID_DTH_RATE)) +
+  geom_boxplot(fill="lightcoral") +
+  labs(title="Boxplot of Drug Overdose Death Rate", y="Drug Overdose Death Rate")
+
+```
+
+```{r}
+# QQ plots to assess normality
+library(car)
+qqPlot(data_clean$AHRF_UNEMPLOYED_RATE, main="QQ Plot of Unemployment Rate")
+qqPlot(data_clean$CDCW_OPIOID_DTH_RATE, main="QQ Plot of Drug Overdose Death Rate")
+```
+
+```{r}
+# Scatter plot of unemployment rate vs opioid death rate
+ggplot(data_clean, aes(x=AHRF_UNEMPLOYED_RATE, y=CDCW_OPIOID_DTH_RATE)) +
+  geom_point(alpha=0.5) +
+  labs(title="Unemployment Rate vs Opioid Death Rate", x="Unemployment Rate", y="Drug Overdose Death Rate")
+
+```
+
+```{r}
+
+# Correlation analysis
+cor(data_clean$AHRF_UNEMPLOYED_RATE, data_clean$CDCW_OPIOID_DTH_RATE)
+
+```
+
+```{r}
+# Pearson's correlation test
+cor_test <- cor.test(data_clean$AHRF_UNEMPLOYED_RATE, data_clean$CDCW_OPIOID_DTH_RATE)
+cor_test
+
+
+```
+
+```{r}
+library(ezids)
+library(dplyr)
+library(ggplot2)
+
+
+# Categorize unemployment rate into groups (Low, Medium, High)
+data_div <- data_clean %>%
+  mutate(Unemployment_Group = cut(AHRF_UNEMPLOYED_RATE,
+                                  breaks = quantile(AHRF_UNEMPLOYED_RATE, probs = c(0, 0.33, 0.66, 1)),
+                                  labels = c("Low", "Medium", "High"),
+                                  include.lowest = TRUE))
+
+# Perform ANOVA to test differences in opioid death rates across unemployment groups
+anova_result <- aov(CDCW_OPIOID_DTH_RATE ~ Unemployment_Group, data = data_div) 
+xkabledply(anova_result)
+
+
+
+# Display ANOVA results
+summary(anova_result)
+```
+
+```{r}
+
+#performing Tukey HSD post-hoc test
+TukeyHSD(anova_result)
+
+# Boxplot to visualize the differences in opioid death rate across groups
+ggplot(data_div, aes(x=Unemployment_Group, y=CDCW_OPIOID_DTH_RATE)) +
+  geom_boxplot(fill="lightblue") +
+  labs(title="Drug Overdose Death Rate by Unemployment Group", x="Unemployment Group", y="Drug Overdose Death Rate")
+
+```
+
+```{r}
+#Linear Regression
+
+lm_model <- lm(CDCW_OPIOID_DTH_RATE ~ AHRF_UNEMPLOYED_RATE, data = data_clean)
+summary(lm_model)
+
+# Diagnostic plots for linear regression
+par(mfrow=c(2,2))
+plot(lm_model)
+
+```
+
+```{r}
+
+
+correlation_data <- na.omit(data[, c('AHRF_UNEMPLOYED_RATE', 'CDCW_OPIOID_DTH_RATE', 'ACS_PCT_EMPLOYED')])
+
+# Compute correlation matrix
+cor_matrix <- cor(correlation_data)
+
+# Display correlation matrix
+print(cor_matrix)
+
+# Optional: Visualize with corrplot
+# install.packages("corrplot") if not already installed
+library(corrplot)
+corrplot(cor_matrix, method="color", type="upper", tl.col="black", tl.srt=45)
+
+
+```
+
